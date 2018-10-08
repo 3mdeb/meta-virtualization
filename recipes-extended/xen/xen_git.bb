@@ -1,6 +1,6 @@
 require xen.inc
 
-SRCREV ?= "2b50cdbc444c637575580dcfa6c9525a84d5cc62"
+SRCREV ?= "${AUTOREV}"
 
 XEN_REL = "4.12"
 XEN_BRANCH = "staging"
@@ -10,9 +10,14 @@ PV = "${XEN_REL}+git${SRCPV}"
 
 S = "${WORKDIR}/git"
 
+### build from remote repo
 SRC_URI = " \
-    git://xenbits.xen.org/xen.git;branch=${XEN_BRANCH} \
-    file://xen-disable-sse-before-inlines.patch \
+    git://github.com/3mdeb/xen.git;branch=${XEN_BRANCH} \
     "
+
+### build from local repo:
+#SRC_URI = " \
+#    git:///home/user/storage/projects/xen;branch=${XEN_BRANCH};protocol=file \
+#    "
 
 DEFAULT_PREFERENCE = "-1"
