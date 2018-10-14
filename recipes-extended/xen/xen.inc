@@ -80,6 +80,7 @@ RDEPENDS_${PN}-base = "\
     ${PN}-xenstore \
     ${PN}-xenstored \
     ${PN}-xl \
+    seabios \
     "
 
 RDEPENDS_${PN}-dev = ""
