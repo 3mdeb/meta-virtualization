@@ -11,6 +11,7 @@ S = "${WORKDIR}/git"
 SRC_URI = " \
     git://github.com/3mdeb/xen.git;branch=${XEN_BRANCH};tag=${XEN_TAG} \
     file://0001-xenlockprof-format-overflov.patch \
+    file://0002-tools-misc-fix-hypothetical-buffer-overflow-in-xen-lowmemd.patch \
     "
 
 DEFAULT_PREFERENCE = "-1"
