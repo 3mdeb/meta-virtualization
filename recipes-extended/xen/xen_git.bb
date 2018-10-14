@@ -1,18 +1,19 @@
 require xen.inc
 
-SRCREV ?= "${AUTOREV}"
+XEN_REL = "4.8"
+XEN_BRANCH = "staging-4.8"
+TAG = "RELEASE-4.8.4"
+SRC_REF = "tag=${TAG};branch=${XEN_BRANCH}"
 
-XEN_REL = "4.12"
-XEN_BRANCH = "staging"
 FLASK_POLICY_FILE = "xenpolicy-${XEN_REL}-unstable"
 
-PV = "${XEN_REL}+git${SRCPV}"
+PV = "${TAG}"
 
 S = "${WORKDIR}/git"
 
 ### build from remote repo
 SRC_URI = " \
-    git://github.com/3mdeb/xen.git;branch=${XEN_BRANCH} \
+    git://github.com/3mdeb/xen.git;${SRC_REF} \
     "
 
 ### build from local repo:
