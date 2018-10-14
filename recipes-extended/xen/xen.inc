@@ -83,6 +83,7 @@ RDEPENDS_${PN}-base = "\
     ${PN}-xenstore \
     ${PN}-xenstored \
     ${PN}-xl \
+    ${@bb.utils.contains('PACKAGECONFIG', 'hvm', 'seabios', '', d)} \
     "
 
 RDEPENDS_${PN}-dev = ""
