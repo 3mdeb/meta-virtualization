@@ -19,6 +19,8 @@ SRC_URI = " \
     file://0001-tools-gdbsx-fix-Wstringop-truncation-warning.patch \
     file://0001-tools-kdd-mute-spurious-gcc-warning.patch \
     file://0001-tools-include-sys-sysmacros.h-on-Linux.patch \
+    file://0001-xenpmd-make-32-bit-gcc-8.1-non-debug-build-work.patch \
+    file://0001-tools-fix-several-format-truncation-warnings-with-GC.patch \
     "
 
 DEFAULT_PREFERENCE = "-1"
