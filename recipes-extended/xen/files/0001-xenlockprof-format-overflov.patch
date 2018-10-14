@@ -1,0 +1,41 @@
+tree 80ece693dec6818fb6d8faebc50ef80dad442fc1
+parent 88ad3208bb9a2e9516850d8480a5a323846dd0ed
+author Seraphime Kirkovski <kirkseraph@gmail.com> Tue Apr 4 19:31:59 2017 +0200
+committer Wei Liu <wei.liu2@citrix.com> Wed Apr 5 16:12:34 2017 +0100
+
+tools:misc:xenlockprof: fix possible format string overflow
+
+GCC7 complains about a possible overflow/truncation in xenlockprof.
+
+xenlockprof.c: In function ‘main’:
+xenlockprof.c:100:53: error: ‘%s’ directive writing up to 39 bytes into a
+                         region of size between 17 and 37 [-Werror=format-overflow=]
+             sprintf(name, "unknown type(%d) %d lock %s", data[j].type,
+                                                     ^~
+xenlockprof.c:100:13: note: ‘sprintf’ output between 24 and 83 bytes
+                                             into a destination of size 60
+             sprintf(name, "unknown type(%d) %d lock %s", data[j].type,
+             ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                     data[j].idx, data[j].name);
+                     ~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This increases the size of name to 100. Not the most scalable solution,
+but certainly the "cheapest", as it doesn't add dependencies for
+asprintf.
+
+Signed-off-by: Seraphime Kirkovski <kirkseraph@gmail.com>
+Acked-by: Wei Liu <wei.liu2@citrix.com>
+
+diff --git a/tools/misc/xenlockprof.c b/tools/misc/xenlockprof.c
+index 41fcb792cc04..df23c82912e6 100644
+--- a/tools/misc/xenlockprof.c
++++ b/tools/misc/xenlockprof.c
+@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
+     uint32_t           i, j, n;
+     uint64_t           time;
+     double             l, b, sl, sb;
+-    char               name[60];
++    char               name[100];
+     DECLARE_HYPERCALL_BUFFER(xc_lockprof_data_t, data);
+ 
+     if ( (argc > 2) || ((argc == 2) && (strcmp(argv[1], "-r") != 0)) )

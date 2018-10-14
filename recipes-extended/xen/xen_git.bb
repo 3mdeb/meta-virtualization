@@ -1,23 +1,18 @@
 require xen.inc
 
-SRCREV ?= "${AUTOREV}"
-
-XEN_REL = "4.12"
-XEN_BRANCH = "staging"
-FLASK_POLICY_FILE = "xenpolicy-${XEN_REL}-unstable"
+XEN_REL ?= "4.8.4"
+XEN_BRANCH ?= "stable-4.8"
+XEN_TAG = "RELEASE-${XEN_REL}"
 
 PV = "${XEN_REL}+git${SRCPV}"
 
 S = "${WORKDIR}/git"
 
-### build from remote repo
 SRC_URI = " \
-    git://github.com/3mdeb/xen.git;branch=${XEN_BRANCH} \
+    git://github.com/3mdeb/xen.git;branch=${XEN_BRANCH};tag=${XEN_TAG} \
+    file://0001-xenlockprof-format-overflov.patch \
     "
 
-### build from local repo:
-#SRC_URI = " \
-#    git:///home/user/storage/projects/xen;branch=${XEN_BRANCH};protocol=file \
-#    "
-
 DEFAULT_PREFERENCE = "-1"
+
+PARALLEL_MAKE = ""
