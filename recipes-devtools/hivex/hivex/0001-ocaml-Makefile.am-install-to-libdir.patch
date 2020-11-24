@@ -1,0 +1,31 @@
+From 260ffbdf3e7d4006d160d96e2463d34421b1c982 Mon Sep 17 00:00:00 2001
+From: Maciej Pijanowski <maciej.pijanowski@3mdeb.com>
+Date: Sat, 21 Nov 2020 00:59:47 +0100
+Subject: [PATCH] ocaml/Makefile.am: install to libdir
+
+The OCAMLLIB equals to /work/build/tmp/work-shared/ocaml/.../usr/lib
+and the /work/build/... directory structure gets created into the target
+rootfs, which is not desired. We want the ocaml modules to be installed
+into the libdir instead.
+
+Signed-off-by: Maciej Pijanowski <maciej.pijanowski@3mdeb.com>
+---
+ ocaml/Makefile.am | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/ocaml/Makefile.am b/ocaml/Makefile.am
+index 85655b6..79964d3 100644
+--- a/ocaml/Makefile.am
++++ b/ocaml/Makefile.am
+@@ -104,9 +104,9 @@ install_files += *.cmx *.cmxa
+ endif
+ 
+ install-data-hook:
+-	mkdir -p $(DESTDIR)$(OCAMLLIB)/stublibs
++	mkdir -p $(DESTDIR)$(libdir)/stublibs
+ 	$(OCAMLFIND) install \
+-	  -ldconf ignore -destdir $(DESTDIR)$(OCAMLLIB) \
++	  -ldconf ignore -destdir $(DESTDIR)$(libdir) \
+ 	  $(PACKAGE_NAME) \
+ 	  $(install_files)
+ 
