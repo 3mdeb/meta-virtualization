@@ -5,26 +5,33 @@ HOMEPAGE = "https://sandbox.libvirt.org/"
 LICENSE = "LGPLv2.1"
 LIC_FILES_CHKSUM = "file://COPYING;md5=4fbd65380cdd255951079008b364516c"
 
-SRC_URI = "git://gitlab.com/libvirt/libvirt-sandbox.git;protocol=https"
+SRC_URI = "git://gitlab.com/libvirt/libvirt-sandbox.git;protocol=https \
+           file://0002-m4-virt-xdr.md-prefix-the-tirpc-include-path-with-SY.patch \
+           file://0003-introduce-without-selinux-switch.patch \
+           "
 SRCREV = "0cfbf9990a0d7094bf4d815066012b5b8fc62071"
 S = "${WORKDIR}/git"
 
-# the libselinux is a mandatory dependency, which requires using the
-# meta-selinux in the build even if we do not use the selinux
-DEPENDS = "glib-2.0 intltool-native libtirpc libselinux libvirt libvirt-glib zlib xz"
+DEPENDS = "glib-2.0 intltool-native libtirpc libvirt libvirt-glib zlib xz"
 
-# If brokensep is not used, following error appears during the do_configure():
-# | Makefile.am: installing './INSTALL'
-# | Makefile.am: error: required file './AUTHORS' not found
-# | config.status: error: ../libvirt-sandbox-0.6.0/GNUmakefile: file not found
 inherit pkgconfig autotools gobject-introspection gtk-doc
 
-# it depends on the static LZMA library, set following line in the local.conf
-# or in the distro configuration file
+# The libvirt-sandbox-init-lxc and libvirt-sandbox-init-qemu are linked with
+# -all-static option and need static libraries (-l, -lzma)
+# Set following lines in the local.conf or in the distro configuration file
+# to build the recipe properly
+# DISABLE_STATIC_pn-glibc = ""
 # DISABLE_STATIC_pn-xz = ""
+# DISABLE_STATIC_pn-zlib = ""
 
 do_configure_prepend() {
   # the same workaround is applied in the original autogen.sh file
   # https://gitlab.com/libvirt/libvirt-sandbox/-/blob/master/autogen.sh#L35
   touch ${S}/ChangeLog ${S}/AUTHORS
 }
+
+# the includedir prefix to be used by the m4/virt-xdr.m4 file
+export SYSROOT="${RECIPE_SYSROOT}"
+
+PACKAGECONFIG ??= ""
+PACKAGECONFIG[selinux] = "--with-selinux,--without-selinux,libselinux"

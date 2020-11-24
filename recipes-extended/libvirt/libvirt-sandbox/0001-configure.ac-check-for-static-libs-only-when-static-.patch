@@ -1,0 +1,30 @@
+From 2b8183befe5d690a716c484296334647785e0308 Mon Sep 17 00:00:00 2001
+From: Maciej Pijanowski <maciej.pijanowski@3mdeb.com>
+Date: Tue, 24 Nov 2020 19:42:50 +0100
+Subject: [PATCH] configure.ac: check for static libs only when static build
+ was selected
+
+Signed-off-by: Maciej Pijanowski <maciej.pijanowski@3mdeb.com>
+---
+ configure.ac | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index 2661ceb..0d570c2 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -113,9 +113,11 @@ LIBVIRT_SANDBOX_RPCGEN
+ LIBVIRT_SANDBOX_SELINUX
+ LIBVIRT_SANDBOX_XDR
+ 
+-LIBVIRT_SANDBOX_STATIC_LIBC
+-LIBVIRT_SANDBOX_STATIC_LZMA
+-LIBVIRT_SANDBOX_STATIC_ZLIB
++if test "$enable_static" = "yes" ; then
++    LIBVIRT_SANDBOX_STATIC_LIBC
++    LIBVIRT_SANDBOX_STATIC_LZMA
++    LIBVIRT_SANDBOX_STATIC_ZLIB
++fi
+ 
+ dnl search for LDD path
+ AC_PATH_PROG([LDD_PATH], [ldd])

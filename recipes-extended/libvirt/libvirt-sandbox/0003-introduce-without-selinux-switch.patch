@@ -1,0 +1,119 @@
+From 5779695b4e31ca257a34477cc1fdd7dc0195c1f6 Mon Sep 17 00:00:00 2001
+From: Maciej Pijanowski <maciej.pijanowski@3mdeb.com>
+Date: Tue, 24 Nov 2020 19:43:44 +0100
+Subject: [PATCH] introduce without-selinux switch
+
+Signed-off-by: Maciej Pijanowski <maciej.pijanowski@3mdeb.com>
+---
+ bin/virt-sandbox.c                       |  6 ++++++
+ configure.ac                             | 12 +++++++++++-
+ libvirt-sandbox/libvirt-sandbox-config.c |  6 ++++++
+ 3 files changed, 23 insertions(+), 1 deletion(-)
+
+diff --git a/bin/virt-sandbox.c b/bin/virt-sandbox.c
+index 6032562..3962462 100644
+--- a/bin/virt-sandbox.c
++++ b/bin/virt-sandbox.c
+@@ -87,7 +87,9 @@ int main(int argc, char **argv) {
+     gchar **includes = NULL;
+     gchar *includefile = NULL;
+     gchar *uri = NULL;
++#ifdef WITH_SELINUX
+     gchar *security = NULL;
++#endif /* WITH_SELINUX */
+     gchar **networks = NULL;
+     gchar **cmdargs = NULL;
+     gchar *root = NULL;
+@@ -125,8 +127,10 @@ int main(int argc, char **argv) {
+           N_("file contain list of files to include"), "FILE" },
+         { "network", 'N', 0, G_OPTION_ARG_STRING_ARRAY, &networks,
+           N_("setup network interface properties"), "PATH", },
++#ifdef WITH_SELINUX
+         { "security", 's', 0, G_OPTION_ARG_STRING, &security,
+           N_("security properties"), "PATH", },
++#endif /* WITH_SELINUX */
+         { "privileged", 'p', 0, G_OPTION_ARG_NONE, &privileged,
+           N_("run the command privileged"), NULL },
+         { "switchto", 'S', 0, G_OPTION_ARG_STRING, &switchto,
+@@ -263,12 +267,14 @@ int main(int argc, char **argv) {
+                    error && error->message ? error->message : _("Unknown failure"));
+         goto cleanup;
+     }
++#ifdef WITH_SELINUX
+     if (security &&
+         !gvir_sandbox_config_set_security_opts(cfg, security, &error)) {
+         g_printerr(_("Unable to parse security: %s\n"),
+                    error && error->message ? error->message : _("Unknown failure"));
+         goto cleanup;
+     }
++#endif /* WITH_SELINUX */
+ 
+     if (shell)
+         gvir_sandbox_config_set_shell(cfg, TRUE);
+diff --git a/configure.ac b/configure.ac
+index 0d570c2..45fef71 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -110,7 +110,17 @@ LIBVIRT_SANDBOX_GTK_MISC
+ LIBVIRT_SANDBOX_WIN32
+ LIBVIRT_SANDBOX_COVERAGE
+ LIBVIRT_SANDBOX_RPCGEN
+-LIBVIRT_SANDBOX_SELINUX
++
++AC_ARG_WITH([selinux],
++  [AS_HELP_STRING([--with-selinux],
++    [add SELinux support @<:@default=yes@:>@])])
++m4_divert_text([DEFAULTS], [with_selinux=yes])
++
++if test "$with_selinux" = "yes" ; then
++    LIBVIRT_SANDBOX_SELINUX
++    AC_DEFINE([WITH_SELINUX], [1], [Whether SELinux support was enabled])
++fi
++
+ LIBVIRT_SANDBOX_XDR
+ 
+ if test "$enable_static" = "yes" ; then
+diff --git a/libvirt-sandbox/libvirt-sandbox-config.c b/libvirt-sandbox/libvirt-sandbox-config.c
+index 4a10736..251abd7 100644
+--- a/libvirt-sandbox/libvirt-sandbox-config.c
++++ b/libvirt-sandbox/libvirt-sandbox-config.c
+@@ -29,7 +29,9 @@
+ #include "libvirt-sandbox/libvirt-sandbox-config-all.h"
+ #include "libvirt-sandbox/libvirt-sandbox-util.h"
+ #include <errno.h>
++#ifdef WITH_SELINUX
+ #include <selinux/selinux.h>
++#endif /* WITH_SELINUX */
+ 
+ /**
+  * SECTION: libvirt-sandbox-config
+@@ -1855,11 +1857,13 @@ const gchar *gvir_sandbox_config_get_security_label(GVirSandboxConfig *config)
+  * Set the SELinux security dynamic for the sandbox. The default
+  * dynamic is "svirt_sandbox_t"
+  */
++#ifdef WITH_SELINUX
+ void gvir_sandbox_config_set_security_dynamic(GVirSandboxConfig *config, gboolean dynamic)
+ {
+     GVirSandboxConfigPrivate *priv = config->priv;
+     priv->secDynamic = dynamic;
+ }
++#endif /* WITH_SELINUX */
+ 
+ /**
+  * gvir_sandbox_config_get_security_dynamic:
+@@ -1876,6 +1880,7 @@ gboolean gvir_sandbox_config_get_security_dynamic(GVirSandboxConfig *config)
+ }
+ 
+ 
++#ifdef WITH_SELINUX
+ gboolean gvir_sandbox_config_set_security_opts(GVirSandboxConfig *config,
+                                                const gchar *optstr,
+                                                GError **error)
+@@ -1926,6 +1931,7 @@ gboolean gvir_sandbox_config_set_security_opts(GVirSandboxConfig *config,
+     g_free(tmp);
+     return ret;
+ }
++#endif /* WITH_SELINUX */
+ 
+ /**
+  * gvir_sandbox_config_set_debug:

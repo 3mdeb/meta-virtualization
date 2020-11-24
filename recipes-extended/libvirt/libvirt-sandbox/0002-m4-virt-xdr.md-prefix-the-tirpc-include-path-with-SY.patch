@@ -1,0 +1,23 @@
+From f59ea645a5a297177350b8c8525cd1355a81a0ff Mon Sep 17 00:00:00 2001
+From: Maciej Pijanowski <maciej.pijanowski@3mdeb.com>
+Date: Tue, 24 Nov 2020 19:43:21 +0100
+Subject: [PATCH] m4/virt-xdr.md: prefix the tirpc include path with SYSROOT
+
+Signed-off-by: Maciej Pijanowski <maciej.pijanowski@3mdeb.com>
+---
+ m4/virt-xdr.m4 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/m4/virt-xdr.m4 b/m4/virt-xdr.m4
+index b39392a..aac07a2 100644
+--- a/m4/virt-xdr.m4
++++ b/m4/virt-xdr.m4
+@@ -12,7 +12,7 @@ AC_DEFUN([LIBVIRT_SANDBOX_XDR], [
+     LIBS="$old_LIBS"
+ 
+     AC_CACHE_CHECK([where to find <rpc/rpc.h>], [lv_cv_xdr_cflags], [
+-      for add_CFLAGS in '' '-I/usr/include/tirpc' 'missing'; do
++      for add_CFLAGS in "" "-I$SYSROOT/usr/include/tirpc" "missing"; do
+         if test x"$add_CFLAGS" = xmissing; then
+           lv_cv_xdr_cflags=missing; break
+         fi

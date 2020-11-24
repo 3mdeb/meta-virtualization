@@ -1,0 +1,26 @@
+From e2828c812363ab5e89193cb454eb8b677d4228b1 Mon Sep 17 00:00:00 2001
+From: Maciej Pijanowski <maciej.pijanowski@3mdeb.com>
+Date: Tue, 24 Nov 2020 19:26:36 +0100
+Subject: [PATCH] libvirt-glib-1.0.pc.in: harcode Cflags
+
+Otherwise, the full host path to the recipe-sysroot was placed
+within Cflags.
+
+Signed-off-by: Maciej Pijanowski <maciej.pijanowski@3mdeb.com>
+---
+ libvirt-glib-1.0.pc.in | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libvirt-glib-1.0.pc.in b/libvirt-glib-1.0.pc.in
+index d00be9fdb6d2..01b1084733d7 100644
+--- a/libvirt-glib-1.0.pc.in
++++ b/libvirt-glib-1.0.pc.in
+@@ -9,4 +9,4 @@ Description: libvirt glib library
+ Requires: glib-2.0
+ Libs: -L${libdir} -lvirt-glib-1.0
+ Libs.private: @LIBVIRT_LIBS@ @GLIB2_LIBS@
+-Cflags: -I${includedir}/libvirt-glib-1.0 @LIBVIRT_CFLAGS@ @GLIB2_CFLAGS@
++Cflags: -I${includedir}/libvirt-glib-1.0 -I${includedir}/glib-2.0 -I${libdir}/glib-2.0/include
+-- 
+2.25.1
+
